@@ -120,7 +120,7 @@ class LinkedList:
         return False
 
     def __lt__(self, other: Any) -> bool:
-        if not isinstance(other):
+        if not is_list(other):
             raise TypeError(f"'<' not supported between instances of {type(self).__name__} and {type(other).__name__}")
 
         if len(self) == len(other) == 0:
@@ -132,7 +132,7 @@ class LinkedList:
         return self[0] < other[0]
 
     def __le__(self, other: Any) -> bool:
-        if not isinstance(other):
+        if not is_list(other):
             raise TypeError(f"'<=' not supported between instances of {type(self).__name__} and {type(other).__name__}")
 
         if len(self) == len(other) == 0:
@@ -144,7 +144,7 @@ class LinkedList:
         return self[0] <= other[0]
 
     def __gt__(self, other: Any) -> bool:
-        if not isinstance(other):
+        if not is_list(other):
             raise TypeError(f"'>' not supported between instances of {type(self).__name__} and {type(other).__name__}")
 
         if len(self) == len(other) == 0:
@@ -156,7 +156,7 @@ class LinkedList:
         return self[0] > other[0]
 
     def __ge__(self, other: Any) -> bool:
-        if not isinstance(other):
+        if not is_list(other):
             raise TypeError(f"'>=' not supported between instances of {type(self).__name__} and {type(other).__name__}")
 
         if len(self) == len(other) == 0:
@@ -167,16 +167,15 @@ class LinkedList:
             return True
         return self[0] >= other[0]
 
-    # TODO: Implement negative index insertion
     def insert(self, index: int, value: Any) -> None:
         new_node = Node(value)
+        self._length += 1
 
         if self.head is None or index == 0:
             new_node.next = self.head
             self.head = new_node
             return
 
-        self._length += 1
         curr = self.head
         # Case index larger than list
         if index >= len(self):
@@ -186,6 +185,9 @@ class LinkedList:
             return
 
         # Case index smaller than 0
+        if index < 0:
+            self.insert(max(0, index + len(self)), value)
+            return
 
         # Default case index in bounds
         for _ in range(index - 1):
@@ -193,6 +195,55 @@ class LinkedList:
         new_node.next = curr.next
         curr.next = new_node
 
+    def append(self, value: Any) -> None:
+        self.insert(len(self), value)
+
+    def __add__(self, other: Any) -> 'LinkedList':
+        if not is_list(other):
+            raise TypeError(f"Can only concatenate list or {type(self).__name__} (not \"{type(other).__name__}\") to "
+                            f"{type(self).__name__}")
+
+        new_linked_list = LinkedList()
+        for item in self:
+            new_linked_list.append(item)
+        for item in other:
+            new_linked_list.append(item)
+        return new_linked_list
+
+    def __sub__(self, other: Any) -> None:
+        raise TypeError(f"unsupported operand type(s) for -: '{type(self).__name__}' and '{type(other).__name__}'")
+
+    def __mul__(self, other: Any) -> 'LinkedList':
+        if not isinstance(other, int):
+            raise TypeError(f"can't multiply sequence by non-int of type '{type(other).__name__}'")
+
+        new_linked_list = LinkedList()
+        for _ in range(other):
+            for item in self:
+                new_linked_list.append(item)
+        return new_linked_list
+
+    def __truediv__(self, other: Any) -> None:
+        raise TypeError(f"unsupported operand type(s) for /: '{type(self).__name__}' and '{type(other).__name__}'")
+
+    def __floordiv__(self, other: Any) -> None:
+        raise TypeError(f"unsupported operand type(s) for //: '{type(self).__name__}' and '{type(other).__name__}'")
+
+    def __mod__(self, other: Any) -> None:
+        raise TypeError(f"unsupported operand type(s) for %: '{type(self).__name__}' and '{type(other).__name__}'")
+
+    def __pow__(self, power: Any, modulo=None) -> None:
+        raise TypeError(f"unsupported operand type(s) for ** or pow(): '{type(self).__name__}' and"
+                        f" '{type(power).__name__}'")
+
+    def __round__(self, n=None) -> None:
+        raise TypeError(f"unsupported operand type(s) for round(): '{type(self).__name__}'")
+
+    def __enter__(self) -> None:
+        raise TypeError(f"'{type(self).__name__}' object does not support the context manager protocol")
+
+    def __bool__(self) -> bool:
+        return self.head is not None
 
 
 class LinkedListIterator:
@@ -209,4 +260,3 @@ class LinkedListIterator:
             value = self.current.value
             self.current = self.current.next
             return value
-
