@@ -198,6 +198,73 @@ class LinkedList:
     def append(self, value: Any) -> None:
         self.insert(len(self), value)
 
+    def remove(self, value: Any) -> None:
+        curr = self.head
+        prev = None
+        while curr is not None:
+            if prev is None and curr.value == value:
+                self.head = curr.next
+                self._length -= 1
+                return
+            if curr.value == value:
+                prev.next = curr.next
+                self._length -= 1
+                return
+            prev = curr
+            curr = curr.next
+        raise ValueError("LinkedList.remove(value): value not in list")
+
+    def pop(self, index: int = -1) -> Any:
+        if self.head is None:
+            raise IndexError("pop from empty list")
+        if index >= len(self) or -index > len(self):
+            raise IndexError("pop index out of range")
+        if index == 0:
+            popped = self.head.value
+            self.head = self.head.next
+            self._length -= 1
+            return popped
+
+        if index < 0:
+            index += len(self)
+        i = 0
+        curr = self.head
+        prev = None
+        while curr is not None:
+            if i == index:
+                popped = curr.value
+                prev.next = curr.next
+                self._length -= 1
+                return popped
+            prev = curr
+            curr = curr.next
+            i += 1
+
+    def clear(self) -> None:
+        self.head = None
+
+    def index(self, value: Any, start: int = 0, end: int = None) -> int:
+        if end is None:
+            end = len(self)
+
+        index = 0
+        curr = self.head
+        while curr is not None:
+            if curr.value == value and start <= index < end:
+                return index
+            index += 1
+            curr = curr.next
+        raise ValueError(f"{value} is not in list")
+
+    def count(self, value: Any) -> int:
+        count = 0
+        for item in self:
+            if item == value:
+                count += 1
+        return count
+
+    # TODO: def sort(self, key=None, reverse: bool = False) -> None:
+
     def __add__(self, other: Any) -> 'LinkedList':
         if not is_list(other):
             raise TypeError(f"Can only concatenate list or {type(self).__name__} (not \"{type(other).__name__}\") to "
