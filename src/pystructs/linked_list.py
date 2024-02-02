@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Optional, Iterable
 
 
 class Node:
@@ -17,6 +17,14 @@ def is_list(other: Any) -> bool:
     return isinstance(other, LinkedList) or isinstance(other, list)
 
 
+def is_iterable(other: Any) -> bool:
+    try:
+        iter(other)
+        return True
+    except TypeError:
+        return False
+
+
 class LinkedList:
     """
     A linked list
@@ -24,7 +32,7 @@ class LinkedList:
     head: Optional[Node]
     _length: int
 
-    def __init__(self, lst: list = None):
+    def __init__(self, lst: Iterable = None):
         self._length = 0
         if lst is None:
             self.head = None
@@ -47,12 +55,22 @@ class LinkedList:
         elements = [str(element) for element in self]
         return ' -> '.join(elements)
 
+    def __repr__(self) -> str:
+        if self.head is None:
+            return "None"
+        elements = [str(element) for element in self]
+        return ' -> '.join(elements)
+
     def __len__(self) -> int:
         return self._length
 
     def __getitem__(self, index: int) -> Node:
+        if isinstance(index, slice):
+            start, stop, step = index.start, index.stop, index.step
+            return self._get_slice(start, stop, step)
         if index < 0 or index >= self._length:
             raise IndexError
+
         i = 0
         for item in self:
             if i == index:
@@ -242,6 +260,7 @@ class LinkedList:
 
     def clear(self) -> None:
         self.head = None
+        self._length = 0
 
     def index(self, value: Any, start: int = 0, end: int = None) -> int:
         if end is None:
@@ -263,7 +282,49 @@ class LinkedList:
                 count += 1
         return count
 
-    # TODO: def sort(self, key=None, reverse: bool = False) -> None:
+    def extend(self, other: Iterable) -> None:
+        if not is_iterable(other):
+            raise TypeError(f"'{type(other).__name__}' object is not iterable")
+
+        if self.head is None:
+            i = 0
+            curr = None
+            for item in other:
+                node = Node(item)
+                if i == 0:
+                    self.head = node
+                    curr = node
+                else:
+                    curr.next = node
+                    curr = node
+                    self._length += 1
+            return
+
+        curr = self.head
+        while curr.next is not None:
+            curr = curr.next
+
+        for item in other:
+            node = Node(item)
+            curr.next = node
+            curr = node
+            self._length += 1
+
+    def reverse(self) -> None:
+        if self.head is None:
+            return
+
+        curr = self.head
+        prev = None
+        while curr is not None:
+            next_curr = curr.next
+            curr.next = prev
+            prev = curr
+            curr = next_curr
+        self.head = prev
+
+    def copy(self) -> 'LinkedList':
+        return LinkedList(self)
 
     def __add__(self, other: Any) -> 'LinkedList':
         if not is_list(other):
@@ -312,6 +373,38 @@ class LinkedList:
     def __bool__(self) -> bool:
         return self.head is not None
 
+    def _get_slice(self, start, stop, step) -> 'LinkedList':
+        start = 0 if start is None else start
+        stop = len(self) if stop is None else stop
+        step = 1 if step is None else step
+
+        new_list = LinkedList()
+        i = 0
+        curr = None
+
+        if step < 0:
+            new_list = self._get_slice(start, stop, 1)
+            new_list.reverse()
+            return new_list._get_slice(None, None, abs(step))
+
+        for item in self:
+            if i < start or (i - start) % step != 0:
+                i += 1
+                continue
+            if i >= stop:
+                break
+            node = Node(item)
+            if curr is None:
+                new_list.head = node
+                new_list._length += 1
+            else:
+                curr.next = node
+                new_list._length += 1
+            curr = node
+            i += 1
+
+        return new_list
+
 
 class LinkedListIterator:
     def __init__(self, head: Optional[Node]) -> None:
@@ -327,3 +420,8 @@ class LinkedListIterator:
             value = self.current.value
             self.current = self.current.next
             return value
+
+# TODO:
+#  - merge sort
+#  - add node for loop
+#  - Add prev for loop
