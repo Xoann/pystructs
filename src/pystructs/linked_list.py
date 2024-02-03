@@ -1,4 +1,4 @@
-from typing import Any, Optional, Iterable
+from typing import Any, Optional, Iterable, Callable
 
 
 class Node:
@@ -106,8 +106,8 @@ class LinkedList:
             curr = curr.next
             i += 1
 
-    def __iter__(self) -> 'LinkedListIterator':
-        return LinkedListIterator(self.head)
+    def __iter__(self, return_nodes: bool = False, return_prev: bool = False) -> 'LinkedListIterator':
+        return LinkedListIterator(self.head, return_nodes, return_prev)
 
     def __contains__(self, item: Any) -> bool:
         for element in self:
@@ -405,10 +405,60 @@ class LinkedList:
 
         return new_list
 
+    def _merge_sort(self, head: Node, key: Callable = None, reverse=False) -> None:
+        if head is None or head.next is None:
+            return
+
+        middle = self._find_middle(head)
+        left = head
+        right = middle.next
+        middle.next = None
+
+        self._merge_sort(left)
+        self._merge_sort(right)
+
+        self._merge(left, right, reverse)
+        if self.head is None:
+            self.head = left
+        else:
+            while left.next:
+                left = left.next
+            left.next = right
+
+
+    def _merge(self, left: Node, right: Node, reverse: bool) -> None:
+
+        while left is not None and right is not None:
+            if left.value <= right.value and not reverse:
+                left = left.next
+            elif left.value > right.value and not reverse:
+                left.value, right.value = right.value, left.value
+                right = right.next
+
+            if left.value >= right.value and reverse:
+                left = left.next
+            elif left.value < right.value and reverse:
+                left.value, right.value = right.value, left.value
+                right = right.next
+
+    def sort(self) -> None:
+        self._merge_sort(self.head)
+
+    def _find_middle(self, head: Node) -> Node:
+        i = 0
+        middle = len(self) // 2
+        while i < middle - 1:
+            head = head.next
+            i += 1
+        return head
+
 
 class LinkedListIterator:
-    def __init__(self, head: Optional[Node]) -> None:
+    def __init__(self, head: Optional[Node], return_nodes: bool, return_prev: bool) -> None:
         self.current = head
+        self.prev = None
+        self.return_nodes = return_nodes or return_prev
+        self.return_prev = return_prev
 
     def __iter__(self) -> 'LinkedListIterator':
         return self
@@ -418,10 +468,17 @@ class LinkedListIterator:
             raise StopIteration
         else:
             value = self.current.value
+            curr = self.current
+            prev = self.prev
+
+            self.prev = self.current
             self.current = self.current.next
+
+            if self.return_prev:
+                return curr, prev
+            if self.return_nodes:
+                return curr
             return value
 
 # TODO:
 #  - merge sort
-#  - add node for loop
-#  - Add prev for loop
