@@ -12,6 +12,17 @@ class Node:
         self.value = value
         self.next = None
 
+    def __str__(self) -> str:
+        elements = []
+        if self.next is None:
+            return str(self.value)
+        curr = self
+        while curr is not None:
+            elements.append(str(curr.value))
+            curr = curr.next
+
+        return ' -> '.join(elements)
+
 
 def is_list(other: Any) -> bool:
     return isinstance(other, LinkedList) or isinstance(other, list)
@@ -64,7 +75,7 @@ class LinkedList:
     def __len__(self) -> int:
         return self._length
 
-    def __getitem__(self, index: int) -> Node:
+    def __getitem__(self, index: int) -> 'LinkedList':
         if isinstance(index, slice):
             start, stop, step = index.start, index.stop, index.step
             return self._get_slice(start, stop, step)
@@ -405,19 +416,17 @@ class LinkedList:
 
         return new_list
 
-    def _merge_sort(self, head: Node, key: Callable = None, reverse=False) -> None:
+    def _merge_sort(self, head: Node, key: Callable, reverse) -> None:
         if head is None or head.next is None:
             return
-
         middle = self._find_middle(head)
         left = head
         right = middle.next
         middle.next = None
 
-        self._merge_sort(left)
-        self._merge_sort(right)
-
-        self._merge(left, right, reverse)
+        self._merge_sort(left, key, reverse)
+        self._merge_sort(right, key, reverse)
+        self._merge(left, right, key, reverse)
         if self.head is None:
             self.head = left
         else:
@@ -425,32 +434,32 @@ class LinkedList:
                 left = left.next
             left.next = right
 
-
-    def _merge(self, left: Node, right: Node, reverse: bool) -> None:
-
+    @staticmethod
+    def _merge(left: Node, right: Node, key: Callable, reverse: bool) -> None:
         while left is not None and right is not None:
-            if left.value <= right.value and not reverse:
+            if ((not reverse and key(left.value) <= key(right.value)) or
+                    (reverse and key(left.value) >= key(right.value))):
                 left = left.next
-            elif left.value > right.value and not reverse:
+            else:
                 left.value, right.value = right.value, left.value
                 right = right.next
 
-            if left.value >= right.value and reverse:
-                left = left.next
-            elif left.value < right.value and reverse:
-                left.value, right.value = right.value, left.value
-                right = right.next
+    def sort(self, key: Callable = None, reverse: bool = False) -> None:
+        self._merge_sort(self.head, key=key, reverse=reverse)
 
-    def sort(self) -> None:
-        self._merge_sort(self.head)
+    @staticmethod
+    def _find_middle(head: Node) -> Node:
+        slow = head
+        fast = head
 
-    def _find_middle(self, head: Node) -> Node:
-        i = 0
-        middle = len(self) // 2
-        while i < middle - 1:
-            head = head.next
-            i += 1
-        return head
+        prev_slow = None
+
+        while fast is not None and fast.next is not None:
+            prev_slow = slow
+            slow = slow.next
+            fast = fast.next.next
+
+        return prev_slow if prev_slow else head
 
 
 class LinkedListIterator:
@@ -480,5 +489,4 @@ class LinkedListIterator:
                 return curr
             return value
 
-# TODO:
-#  - merge sort
+# TODO: Fix key for sort
