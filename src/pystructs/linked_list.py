@@ -3,7 +3,7 @@ from typing import Any, Optional, Iterable, Callable
 
 class Node:
     """
-    Node
+    Node used in linked lists
     """
     value: Any
     next: Optional['Node']
@@ -39,6 +39,10 @@ def is_iterable(other: Any) -> bool:
 class LinkedList:
     """
     A linked list
+
+    Instance Attributes:
+     - head: The head of the linked list
+     - _length: The length of the linked list
     """
     head: Optional[Node]
     _length: int
