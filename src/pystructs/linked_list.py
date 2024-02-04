@@ -426,23 +426,34 @@ class LinkedList:
 
         self._merge_sort(left, key, reverse)
         self._merge_sort(right, key, reverse)
-        self._merge(left, right, key, reverse)
+
+        curr = left
         if self.head is None:
             self.head = left
         else:
-            while left.next:
-                left = left.next
-            left.next = right
+            while curr.next:
+                curr = curr.next
+            curr.next = right
+
+        self._merge(left, right, key, reverse)
 
     @staticmethod
     def _merge(left: Node, right: Node, key: Callable, reverse: bool) -> None:
         while left is not None and right is not None:
-            if ((not reverse and key(left.value) <= key(right.value)) or
-                    (reverse and key(left.value) >= key(right.value))):
-                left = left.next
+            if key:
+                if ((not reverse and key(left.value) <= key(right.value)) or
+                        (reverse and key(left.value) >= key(right.value))):
+                    left = left.next
+                else:
+                    left.value, right.value = right.value, left.value
+                    right = right.next
             else:
-                left.value, right.value = right.value, left.value
-                right = right.next
+                if ((not reverse and left.value <= right.value) or
+                        (reverse and left.value >= right.value)):
+                    left = left.next
+                else:
+                    left.value, right.value = right.value, left.value
+                    right = right.next
 
     def sort(self, key: Callable = None, reverse: bool = False) -> None:
         self._merge_sort(self.head, key=key, reverse=reverse)
@@ -488,5 +499,3 @@ class LinkedListIterator:
             if self.return_nodes:
                 return curr
             return value
-
-# TODO: Fix key for sort
