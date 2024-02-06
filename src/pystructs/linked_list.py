@@ -4,15 +4,29 @@ from typing import Any, Optional, Iterable, Callable
 class Node:
     """
     Node used in linked lists
+
+    Instance Attributes:
+     - value (Any): value stored in the node
+     - next (Optional[Node]): next node or None if there is no next node
     """
     value: Any
     next: Optional['Node']
 
     def __init__(self, value: Any) -> None:
+        """
+        Constructor for Node class
+
+        :param value: value stored in node
+        """
         self.value = value
         self.next = None
 
     def __str__(self) -> str:
+        """
+        String representation of node, prints similarly to linked lists
+
+        :return: string representation of node chain
+        """
         elements = []
         if self.next is None:
             return str(self.value)
@@ -25,10 +39,22 @@ class Node:
 
 
 def is_list(other: Any) -> bool:
+    """
+    Checks if other is a valid list type
+
+    :param other: other to be checked
+    :return: returns whether other is a valid list type
+    """
     return isinstance(other, LinkedList) or isinstance(other, list)
 
 
 def is_iterable(other: Any) -> bool:
+    """
+    Checks if other is iterable
+
+    :param other: other to be checked
+    :return: returns whether other is iterable
+    """
     try:
         iter(other)
         return True
@@ -48,6 +74,11 @@ class LinkedList:
     _length: int
 
     def __init__(self, lst: Iterable = None):
+        """
+        Constructor for LinkedList class
+
+        :param lst: Optional list of elements to instantiate linked list
+        """
         self._length = 0
         if lst is None:
             self.head = None
@@ -65,21 +96,42 @@ class LinkedList:
             curr = node
 
     def __str__(self) -> str:
+        """
+        String representation of the linked list
+
+        :return: string representation of the linked list
+        """
         if self.head is None:
             return "None"
         elements = [str(element) for element in self]
         return ' -> '.join(elements)
 
     def __repr__(self) -> str:
+        """
+        String representation of the linked list
+
+        :return: string representation of the linked list
+        """
         if self.head is None:
             return "None"
         elements = [str(element) for element in self]
         return ' -> '.join(elements)
 
     def __len__(self) -> int:
+        """
+        Gets the length of the linked list
+
+        :return: length of the linked list
+        """
         return self._length
 
     def __getitem__(self, index: int) -> 'LinkedList':
+        """
+        Index into linked list and return it
+
+        :param index: index to fetch element from
+        :return: returns value at index in the linked list
+        """
         if isinstance(index, slice):
             start, stop, step = index.start, index.stop, index.step
             return self._get_slice(start, stop, step)
@@ -93,6 +145,13 @@ class LinkedList:
             i += 1
 
     def __setitem__(self, index: int, value: Any) -> None:
+        """
+        Sets value at index in the linked list to the given value
+
+        :param index: index of element to change
+        :param value: value to be set
+        :return: none
+        """
         if index < 0 or index >= self._length:
             raise IndexError
 
@@ -122,15 +181,41 @@ class LinkedList:
             i += 1
 
     def __iter__(self, return_nodes: bool = False, return_prev: bool = False) -> 'LinkedListIterator':
+        """
+        Iterates through linked, used in for loops
+        for element in linked_list():
+
+        if return_nodes is True, the value returned is the nodes of the linked list
+        for node in linked_list.__iter__(return_nodes=True):
+
+        if return_prev is True, the value returned is a tuple containing (curr, prev) nodes
+        for curr, prev in linked_list.__iter__(return_prev=True):
+
+        :param return_nodes: whether to return the nodes of the linked list instead of the values
+        :param return_prev: whether to also return the previous node in the linked list
+        :return: returns a linked list iterator that iterates through the linked list
+        """
         return LinkedListIterator(self.head, return_nodes, return_prev)
 
     def __contains__(self, item: Any) -> bool:
+        """
+        Returns true if the given item is in the linked list and false otherwise
+
+        :param item: item to search for in linked list
+        :return: whether the given item is in the linked list
+        """
         for element in self:
             if element == item:
                 return True
         return False
 
     def __eq__(self, other: Any) -> bool:
+        """
+        Checks whether two list types contain the same elements at the same indices (are equal)
+
+        :param other: other list to compare to
+        :return: whether self and other are equal
+        """
         if not isinstance(other, LinkedList) and not isinstance(other, list):
             return False
         if len(self) != len(other):
@@ -142,6 +227,12 @@ class LinkedList:
         return True
 
     def __ne__(self, other: Any) -> bool:
+        """
+        Checks whether two list types are not equal
+
+        :param other: other list to compare to
+        :return: whether self and other are not equal
+        """
         if not isinstance(other, LinkedList) and not isinstance(other, list):
             return True
         if len(self) != len(other):
