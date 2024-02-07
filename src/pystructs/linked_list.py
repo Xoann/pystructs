@@ -182,24 +182,24 @@ class LinkedList:
 
     def __iter__(self, return_nodes: bool = False, return_prev: bool = False) -> 'LinkedListIterator':
         """
-        Iterates through linked, used in for loops
+        Iterates through self, used in for loops
         for element in linked_list():
 
-        if return_nodes is True, the value returned is the nodes of the linked list
+        if return_nodes is True, the value returned is the nodes of self
         for node in linked_list.__iter__(return_nodes=True):
 
         if return_prev is True, the value returned is a tuple containing (curr, prev) nodes
         for curr, prev in linked_list.__iter__(return_prev=True):
 
-        :param return_nodes: whether to return the nodes of the linked list instead of the values
-        :param return_prev: whether to also return the previous node in the linked list
+        :param return_nodes: whether to return the nodes of self instead of the values
+        :param return_prev: whether to also return the previous node in self
         :return: returns a linked list iterator that iterates through the linked list
         """
         return LinkedListIterator(self.head, return_nodes, return_prev)
 
     def __contains__(self, item: Any) -> bool:
         """
-        Returns true if the given item is in the linked list and false otherwise
+        Returns true if the given item is in self and false otherwise
 
         :param item: item to search for in linked list
         :return: whether the given item is in the linked list
@@ -211,7 +211,7 @@ class LinkedList:
 
     def __eq__(self, other: Any) -> bool:
         """
-        Checks whether two list types contain the same elements at the same indices (are equal)
+        Checks whether other is equal to self
 
         :param other: other list to compare to
         :return: whether self and other are equal
@@ -228,7 +228,7 @@ class LinkedList:
 
     def __ne__(self, other: Any) -> bool:
         """
-        Checks whether two list types are not equal
+        Checks whether list is not equal to self
 
         :param other: other list to compare to
         :return: whether self and other are not equal
@@ -244,6 +244,12 @@ class LinkedList:
         return False
 
     def __lt__(self, other: Any) -> bool:
+        """
+        Returns whether self is less than other
+
+        :param other: other list to compare to
+        :return: whether self is less than other
+        """
         if not is_list(other):
             raise TypeError(f"'<' not supported between instances of {type(self).__name__} and {type(other).__name__}")
 
@@ -256,6 +262,12 @@ class LinkedList:
         return self[0] < other[0]
 
     def __le__(self, other: Any) -> bool:
+        """
+        Returns whether self is less than or equal to other
+
+        :param other: other list to compare to
+        :return: whether self is less than or equal to other
+        """
         if not is_list(other):
             raise TypeError(f"'<=' not supported between instances of {type(self).__name__} and {type(other).__name__}")
 
@@ -268,6 +280,12 @@ class LinkedList:
         return self[0] <= other[0]
 
     def __gt__(self, other: Any) -> bool:
+        """
+        Returns whether self is greater than other
+
+        :param other: other list to compare to
+        :return: whether self is greater than other
+        """
         if not is_list(other):
             raise TypeError(f"'>' not supported between instances of {type(self).__name__} and {type(other).__name__}")
 
@@ -280,6 +298,13 @@ class LinkedList:
         return self[0] > other[0]
 
     def __ge__(self, other: Any) -> bool:
+        """
+        Returns whether self is greater than or equal to other
+
+        :raises TypeError: if other is not a list type
+        :param other: other list to compare to
+        :return: whether self is greater than or equal to other
+        """
         if not is_list(other):
             raise TypeError(f"'>=' not supported between instances of {type(self).__name__} and {type(other).__name__}")
 
@@ -292,6 +317,21 @@ class LinkedList:
         return self[0] >= other[0]
 
     def insert(self, index: int, value: Any) -> None:
+        """
+        Inserts a value into self at index
+
+        When index is greater than or equal to len(self), value is appended to self
+        When index is negative the value is inserted at the abs(index)th position from the back of the list
+        this value is clamped at 0
+
+        Running time:
+         - O(index)
+         - O(1) at the beginning of the linked list
+
+        :param index: int index to insert into the linked
+        :param value: value to be inserted
+        :return: None
+        """
         new_node = Node(value)
         self._length += 1
 
@@ -320,9 +360,28 @@ class LinkedList:
         curr.next = new_node
 
     def append(self, value: Any) -> None:
+        """
+        Appends a value to the end of self
+
+        Running time:
+         - O(n) where n = len(self)
+
+        :param value: value to be appended
+        :return: None
+        """
         self.insert(len(self), value)
 
     def remove(self, value: Any) -> None:
+        """
+        Removes a value from self
+
+        Running time:
+        - O(n) where n = len(self)
+
+        :raises ValueError: if the value is not in the list
+        :param value: value to be removed from self
+        :return: None
+        """
         curr = self.head
         prev = None
         while curr is not None:
