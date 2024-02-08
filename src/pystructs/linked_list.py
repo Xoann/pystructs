@@ -685,7 +685,7 @@ class LinkedList:
         """
         Helper that uses merge sort to sort the linked list in ascending order.
 
-        If a key function is give, apply it once to each node value and sort them.
+        If a key function is given, apply it once to each node value and sort them.
 
         The reverse flag can be set to sort in descending order.
 
@@ -716,6 +716,16 @@ class LinkedList:
 
     @staticmethod
     def _merge(left: Node, right: Node, key: Callable, reverse: bool) -> None:
+        """
+        Static helper to merge two sorted linked lists into one sorted linked list
+        Note this method takes in nodes and not linked list as the sorting is in-place
+
+        :param left: left head node
+        :param right: right head node
+        :param key: key to sort values by
+        :param reverse: flag to sort in descending order
+        :return: None
+        """
         while left is not None and right is not None:
             if key:
                 if ((not reverse and key(left.value) <= key(right.value)) or
@@ -733,10 +743,27 @@ class LinkedList:
                     right = right.next
 
     def sort(self, key: Callable = None, reverse: bool = False) -> None:
+        """
+        Sort the list in ascending order.
+
+        If a key function is given, apply it once to each node value and sort them.
+
+        The reverse flag can be set to sort in descending order.
+
+        :param key: callable to sort values by
+        :param reverse: flag to sort in descending order
+        :return: None
+        """
         self._merge_sort(self.head, key=key, reverse=reverse)
 
     @staticmethod
     def _find_middle(head: Node) -> Node:
+        """
+        Static helper function to find the middle of a linked list given a head node to search from
+
+        :param head: head node to search for middle from
+        :return: return node at index n // 2, where n is the length of the sub list self[head:]
+        """
         slow = head
         fast = head
 
@@ -751,16 +778,39 @@ class LinkedList:
 
 
 class LinkedListIterator:
+    """
+    LinkedList iterator used by LinkedList.__iter__() to iterate over all values in a linked list
+    """
     def __init__(self, head: Optional[Node], return_nodes: bool, return_prev: bool) -> None:
+        """
+        Interator initialization method
+
+        If return_nodes is True the iterator returns nodes instead of values.
+
+        If return_previous is True the iterator returns 2 nodes instead of values in a tuple (curr, prev)
+
+        :param head: head of list
+        :param return_nodes: flag to return node instead of values
+        :param return_prev: flag to also return previous node along with current node
+        """
         self.current = head
         self.prev = None
         self.return_nodes = return_nodes or return_prev
         self.return_prev = return_prev
 
     def __iter__(self) -> 'LinkedListIterator':
+        """
+        Return self
+
+        :return: self
+        """
         return self
 
     def __next__(self) -> Any:
+        """
+        Return next item in iteration
+        :return: next value, node, of curr-prev pair in linked list
+        """
         if self.current is None:
             raise StopIteration
         else:
