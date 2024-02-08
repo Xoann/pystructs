@@ -397,7 +397,20 @@ class LinkedList:
             curr = curr.next
         raise ValueError("LinkedList.remove(value): value not in list")
 
-    def pop(self, index: int = -1) -> Any:
+    def pop(self, index: int = 0) -> Any:
+        """
+        Remove and return item at index.
+
+        Index is 0 by default removing from the beginning of the list.
+
+        Running Time:
+         - O(index)
+         - O(1) at the beginning of the linked lit
+
+        :raises IndexError: if self is empty or index is out of range
+        :param index: index to pop from self
+        :return: item that was popped
+        """
         if self.head is None:
             raise IndexError("pop from empty list")
         if index >= len(self) or -index > len(self):
@@ -424,10 +437,24 @@ class LinkedList:
             i += 1
 
     def clear(self) -> None:
+        """
+        Clear the linked
+
+        :return: None
+        """
         self.head = None
         self._length = 0
 
     def index(self, value: Any, start: int = 0, end: int = None) -> int:
+        """
+        Return the index of value in self[start:end]
+
+        :raises ValueError: if value is not in self[start:end]
+        :param value: value to search for
+        :param start: starting index to look from
+        :param end: ending index to stop searching from (non-inclusive)
+        :return: index of value
+        """
         if end is None:
             end = len(self)
 
@@ -441,6 +468,12 @@ class LinkedList:
         raise ValueError(f"{value} is not in list")
 
     def count(self, value: Any) -> int:
+        """
+        Return the number of occurrences of value in self
+
+        :param value: value to count in self
+        :return: number of occurrences of value in self
+        """
         count = 0
         for item in self:
             if item == value:
@@ -448,6 +481,13 @@ class LinkedList:
         return count
 
     def extend(self, other: Iterable) -> None:
+        """
+        Extend the linked list with the values of other
+
+        :raises TypeError: if other is not iterable
+        :param other: iterable to extend self by
+        :return: None
+        """
         if not is_iterable(other):
             raise TypeError(f"'{type(other).__name__}' object is not iterable")
 
@@ -476,6 +516,11 @@ class LinkedList:
             self._length += 1
 
     def reverse(self) -> None:
+        """
+        Reverse self
+
+        :return: None
+        """
         if self.head is None:
             return
 
@@ -489,9 +534,21 @@ class LinkedList:
         self.head = prev
 
     def copy(self) -> 'LinkedList':
+        """
+        Return a copy of self
+
+        :return: new linked list identical to self
+        """
         return LinkedList(self)
 
     def __add__(self, other: Any) -> 'LinkedList':
+        """
+        Return a new linked list with the values of self concatenated with other
+
+        :raises TypeError: if other is not a list type
+        :param other: list to add with self
+        :return: new linked list with values of self concatenated with other
+        """
         if not is_list(other):
             raise TypeError(f"Can only concatenate list or {type(self).__name__} (not \"{type(other).__name__}\") to "
                             f"{type(self).__name__}")
@@ -504,9 +561,20 @@ class LinkedList:
         return new_linked_list
 
     def __sub__(self, other: Any) -> None:
+        """
+        This operation is not supported for linked lists
+
+        :raises TypeError: this operation is not supported
+        """
         raise TypeError(f"unsupported operand type(s) for -: '{type(self).__name__}' and '{type(other).__name__}'")
 
     def __mul__(self, other: Any) -> 'LinkedList':
+        """
+        Return a new linked list with the values from self repeated other times.
+
+        :param other: Number of times to repeat self in the new list
+        :return: new linked list with the values from self repeated other times
+        """
         if not isinstance(other, int):
             raise TypeError(f"can't multiply sequence by non-int of type '{type(other).__name__}'")
 
@@ -517,28 +585,71 @@ class LinkedList:
         return new_linked_list
 
     def __truediv__(self, other: Any) -> None:
+        """
+        This operation is not supported for linked lists
+
+        :raises TypeError: this operation is not supported
+        """
         raise TypeError(f"unsupported operand type(s) for /: '{type(self).__name__}' and '{type(other).__name__}'")
 
     def __floordiv__(self, other: Any) -> None:
+        """
+        This operation is not supported for linked lists
+
+        :raises TypeError: this operation is not supported
+        """
         raise TypeError(f"unsupported operand type(s) for //: '{type(self).__name__}' and '{type(other).__name__}'")
 
     def __mod__(self, other: Any) -> None:
+        """
+        This operation is not supported for linked lists
+
+        :raises TypeError: this operation is not supported
+        """
         raise TypeError(f"unsupported operand type(s) for %: '{type(self).__name__}' and '{type(other).__name__}'")
 
     def __pow__(self, power: Any, modulo=None) -> None:
+        """
+        This operation is not supported for linked lists
+
+        :raises TypeError: this operation is not supported
+        """
         raise TypeError(f"unsupported operand type(s) for ** or pow(): '{type(self).__name__}' and"
                         f" '{type(power).__name__}'")
 
     def __round__(self, n=None) -> None:
+        """
+        This operation is not supported for linked lists
+
+        :raises TypeError: this operation is not supported
+        """
         raise TypeError(f"unsupported operand type(s) for round(): '{type(self).__name__}'")
 
     def __enter__(self) -> None:
+        """
+        This operation is not supported for linked lists
+
+        :raises TypeError: this operation is not supported
+        """
         raise TypeError(f"'{type(self).__name__}' object does not support the context manager protocol")
 
     def __bool__(self) -> bool:
+        """
+        Return self's bool conversion, false if head is None and true otherwise
+
+        :return: whether self is empty
+        """
         return self.head is not None
 
     def _get_slice(self, start, stop, step) -> 'LinkedList':
+        """
+        Helper that returns a new linked list sliced from self using start, stop and step.
+
+        :param start: index to start slice
+        :param stop: index to end slice (non-inclusive)
+        :param step: step of slice
+        :return: new linked list sliced from self
+        """
         start = 0 if start is None else start
         stop = len(self) if stop is None else stop
         step = 1 if step is None else step
@@ -571,6 +682,18 @@ class LinkedList:
         return new_list
 
     def _merge_sort(self, head: Node, key: Callable, reverse) -> None:
+        """
+        Helper that uses merge sort to sort the linked list in ascending order.
+
+        If a key function is give, apply it once to each node value and sort them.
+
+        The reverse flag can be set to sort in descending order.
+
+        :param head: head of list to sort
+        :param key: callable to sort values by
+        :param reverse: flag to sort in descending order
+        :return: None
+        """
         if head is None or head.next is None:
             return
         middle = self._find_middle(head)
