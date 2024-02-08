@@ -343,13 +343,14 @@ class LinkedList:
         curr = self.head
         # Case index larger than list
         if index >= len(self):
-            for _ in range(len(self) - 1):
+            while curr.next is not None:
                 curr = curr.next
             curr.next = new_node
             return
 
         # Case index smaller than 0
         if index < 0:
+            self._length -= 1
             self.insert(max(0, index + len(self)), value)
             return
 
