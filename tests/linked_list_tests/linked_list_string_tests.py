@@ -206,4 +206,5 @@ class TestLinkedList(unittest.TestCase):
         self.assertTrue(len(self.linked_list) == 0)
 
     def test_linked_list_index(self):
-        pass
+        self.assertRaises(ValueError, self.linked_list.index, 10)
+
