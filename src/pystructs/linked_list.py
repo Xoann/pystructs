@@ -71,6 +71,7 @@ class LinkedList:
      - _length: The length of the linked list
     """
     head: Optional[Node]
+    last: Optional[Node]
     _length: int
 
     def __init__(self, lst: Iterable = None):
@@ -94,6 +95,7 @@ class LinkedList:
                 curr.next = node
                 self._length += 1
             curr = node
+        self.last = curr
 
     def __str__(self) -> str:
         """
@@ -137,6 +139,9 @@ class LinkedList:
             return self._get_slice(start, stop, step)
         if index < 0 or index >= self._length:
             raise IndexError
+
+        if index == self._length - 1:
+            return self.last.value
 
         i = 0
         for item in self:
@@ -343,9 +348,8 @@ class LinkedList:
         curr = self.head
         # Case index larger than list
         if index >= len(self):
-            while curr.next is not None:
-                curr = curr.next
-            curr.next = new_node
+            self.last.next = new_node
+            self.last = self.last.next
             return
 
         # Case index smaller than 0
@@ -388,21 +392,25 @@ class LinkedList:
         while curr is not None:
             if prev is None and curr.value == value:
                 self.head = curr.next
+                if curr is self.last:
+                    self.last = None
                 self._length -= 1
                 return
             if curr.value == value:
                 prev.next = curr.next
+                if curr is self.last:
+                    self.last = prev
                 self._length -= 1
                 return
             prev = curr
             curr = curr.next
         raise ValueError("LinkedList.remove(value): value not in list")
 
-    def pop(self, index: int = 0) -> Any:
+    def pop(self, index: int = None) -> Any:
         """
         Remove and return item at index.
 
-        Index is 0 by default removing from the beginning of the list.
+        Index is len(self) - 1 by default removing from the beginning of the list.
 
         Running Time:
          - O(index)
@@ -412,11 +420,16 @@ class LinkedList:
         :param index: index to pop from self
         :return: item that was popped
         """
+        if index is None:
+            index = self._length - 1
+
         if self.head is None:
             raise IndexError("pop from empty list")
         if index >= len(self) or -index > len(self):
             raise IndexError("pop index out of range")
         if index == 0:
+            if len(self) == 1:
+                self.last = None
             popped = self.head.value
             self.head = self.head.next
             self._length -= 1
@@ -429,6 +442,8 @@ class LinkedList:
         prev = None
         while curr is not None:
             if i == index:
+                if index == len(self) - 1:
+                    self.last = prev
                 popped = curr.value
                 prev.next = curr.next
                 self._length -= 1
@@ -444,6 +459,7 @@ class LinkedList:
         :return: None
         """
         self.head = None
+        self.last = None
         self._length = 0
 
     def index(self, value: Any, start: int = 0, end: int = None) -> int:
